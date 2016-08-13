@@ -1,0 +1,204 @@
+<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+	var LEFT = "left";
+	var RIGHT = "right";
+	var UP = "up";
+	var DOWN = "down";
+	var socket = io();
+	var selfId = null;
+	var WIDTH = 500;
+	var HEIGHT = 500;
+	var CURRENCY_NAME = "Shiny Pennies";
+	
+	var ctx = document.getElementById("ctx").getContext("2d");
+	ctx.font = '30px Arial';
+	
+	var Img = {};
+	Img.player = new Image();
+	Img.player.src = '/client/images/PennySpriteFront.png';
+	Img.map = new Image();
+	Img.map.src = '/client/images/map.png';
+	
+	var Player = function(initPack) {
+		var self = {};
+		self.id = initPack.id;
+		self.number = initPack.number;
+		self.x = initPack.x;
+		self.y = initPack.y;
+		self.name = initPack.name;
+		self.hp = initPack.hp;
+		self.hpMax = initPack.hpMax;
+		self.score = initPack.score;
+		Player.list[self.id] = self;
+		self.attacking = false;
+		self.facing = DOWN;
+		
+		self.draw = function() {
+			var x = self.x - Player.list[selfId].x + WIDTH/2;
+			var y = self.y - Player.list[selfId].y + HEIGHT/2;
+		
+			var hpWidth = 50 * self.hp / self.hpMax;			
+			var width = Img.player.width;
+			var height = Img.player.height;
+			
+			ctx.fillStyle = 'red';
+			ctx.fillRect(x - hpWidth/2, y - 40, hpWidth,4);
+			
+			if(self.attacking) {
+				if(DOWN == self.facing) {
+					Img.player.src = '/client/images/PennySpriteAttackFront.png';
+				}
+				else if (UP == self.facing) {
+					Img.player.src = '/client/images/PennySpriteAttackBack.png';
+				}
+				else if (RIGHT == self.facing) {
+					Img.player.src = '/client/images/PennySpriteAttackRight.png';
+				}
+				else if (LEFT == self.facing) {
+					Img.player.src = '/client/images/PennySpriteAttackLeft.png';
+				}
+				else {
+					Img.player.src = '/client/images/PennySpriteAttackFront.png';
+				}
+			}
+			else {
+				if(DOWN == self.facing) {
+					Img.player.src = '/client/images/PennySpriteFront.png';
+				}
+				else if (UP == self.facing) {
+					Img.player.src = '/client/images/PennySpriteBack.png';
+				}
+				else if (RIGHT == self.facing) {
+					Img.player.src = '/client/images/PennySpriteRight.png';
+				}
+				else if (LEFT == self.facing) {
+					Img.player.src = '/client/images/PennySpriteLeft.png';
+				}
+				else {
+					Img.player.src = '/client/images/PennySpriteFront.png';
+				}
+			}
+			
+			ctx.drawImage(Img.player,
+			0,0,Img.player.width, Img.player.height,
+			x-width/2, y-height/2,width,height);
+		}
+		
+		return self;
+	}
+	Player.list = {};
+	
+	socket.on('init',function(data) {
+		if(data.selfId) {
+			selfId = data.selfId;
+		}
+		for(var i = 0; i <data.player.length; i++) {
+			new Player(data.player[i]);
+		}
+	});
+	
+	socket.on('update', function(data) {
+		for(var i =0; i < data.player.length; i++) {
+			var pack = data.player[i];
+			var p = Player.list[pack.id];
+			if(p) {
+				if(pack.x !== undefined) {
+					p.x = pack.x;
+				}
+				if(pack.y !== undefined) {
+					p.y = pack.y;
+				}
+				if(pack.hp !== undefined) {
+					p.hp = pack.hp;
+				}
+				if(pack.score !== undefined) {
+					p.score = pack.score;
+				}
+				if(pack.facing !== undefined) {
+					p.facing = pack.facing;
+				}
+				if(pack.attacking !== undefined) {
+					p.attacking = pack.attacking;
+				}
+			}
+		}
+	});
+	
+	socket.on('remove', function(data) {
+		for(var i = 0; i < data.player.length; i++) {
+			delete Player.list[data.player[i]];
+		}
+	});
+	
+	setInterval(function() {
+		if(!selfId) {
+			return;
+		}
+		ctx.clearRect(0,0,500,500);
+		drawMap();
+		drawScore();
+		for(var i in Player.list) {
+			Player.list[i].draw();
+		}
+	}, 1000/60);
+	
+	var drawMap = function(pack) {
+		var x = WIDTH/2 - Player.list[selfId].x;
+		var y = HEIGHT/2 - Player.list[selfId].y;
+		ctx.drawImage(Img.map,x,y);
+	}
+	
+	var drawScore = function() {
+		ctx.fillStyle = 'white';
+		ctx.fillText(CURRENCY_NAME + ": " + Player.list[selfId].score,30,50);
+	}
+	
+	document.onkeydown = function(event) {
+		// Player holding up arrow or w
+		if (38 == event.keyCode || 87 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'up', state:true});
+		}
+		// Player holding down arrow or s
+		else if (40 == event.keyCode || 83 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'down', state:true});
+		}
+		// Player holding left arrow or a
+		else if (37 == event.keyCode || 65 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'left', state:true});
+		}
+		// Player holding right arrow or d
+		else if (39 == event.keyCode || 68 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'right', state:true});
+		}
+		// Player holding right arrow or d
+		else if (32 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'attack', state:true});
+		}
+	}
+	
+	document.onkeyup = function(event) {
+		// Player let go of up arrow or w
+		if (38 == event.keyCode || 87 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'up', state:false});
+		}
+		// Player let go of down arrow or s
+		else if (40 == event.keyCode || 83 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'down', state:false});
+		}
+		// Player let go of left arrow or a
+		else if (37 == event.keyCode || 65 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'left', state:false});
+		}
+		// Player let go of right arrow or d
+		else if (39 == event.keyCode || 68 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'right', state:false});
+		}
+		// Player holding right arrow or d
+		else if (32 == event.keyCode) {
+			socket.emit('keyPress',{inputId:'attack', state:false});
+		}
+	}
+	
+</script>

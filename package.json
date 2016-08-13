@@ -1,0 +1,19 @@
+{
+  "name": "pvpenny_game",
+  "version": "0.0.1",
+  "description": "Game specific to the twitch streamer known as PvPenny or PennyStoneHome.",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zreynolds91/PvPennyGame.git"
+  },
+  "author": "zreynolds",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zreynolds91/PvPennyGame/issues"
+  },
+  "homepage": "https://github.com/zreynolds91/PvPennyGame#readme"
+}
