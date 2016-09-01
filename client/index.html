@@ -1,4 +1,4 @@
-<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+<canvas id="ctx" width="576" height="576" style="border:1px solid #000000;"></canvas>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
@@ -8,8 +8,8 @@
 	var DOWN = "down";
 	var socket = io();
 	var selfId = null;
-	var WIDTH = 500;
-	var HEIGHT = 500;
+	var WIDTH = 576;
+	var HEIGHT = 576;
 	var CURRENCY_NAME = "Shiny Pennies";
 	
 	var ctx = document.getElementById("ctx").getContext("2d");
@@ -17,9 +17,9 @@
 	
 	var Img = {};
 	Img.player = new Image();
-	Img.player.src = '/client/images/PennySpriteFront.png';
-	Img.map = new Image();
-	Img.map.src = '/client/images/map.png';
+	Img.player.src = '/client/images/64bit/PennySpriteFront.png';
+	Img.floor = new Image();
+	Img.floor.src = '/client/images/64bit/floor.png';
 	
 	var Player = function(initPack) {
 		var self = {};
@@ -34,6 +34,7 @@
 		Player.list[self.id] = self;
 		self.attacking = false;
 		self.facing = DOWN;
+		self.map = initPack.map;
 		
 		self.draw = function() {
 			var x = self.x - Player.list[selfId].x + WIDTH/2;
@@ -48,36 +49,36 @@
 			
 			if(self.attacking) {
 				if(DOWN == self.facing) {
-					Img.player.src = '/client/images/PennySpriteAttackFront.png';
+					Img.player.src = '/client/images/64bit/PennySpriteAttackFront.png';
 				}
 				else if (UP == self.facing) {
-					Img.player.src = '/client/images/PennySpriteAttackBack.png';
+					Img.player.src = '/client/images/64bit/PennySpriteAttackBack.png';
 				}
 				else if (RIGHT == self.facing) {
-					Img.player.src = '/client/images/PennySpriteAttackRight.png';
+					Img.player.src = '/client/images/64bit/PennySpriteAttackRight.png';
 				}
 				else if (LEFT == self.facing) {
-					Img.player.src = '/client/images/PennySpriteAttackLeft.png';
+					Img.player.src = '/client/images/64bit/PennySpriteAttackLeft.png';
 				}
 				else {
-					Img.player.src = '/client/images/PennySpriteAttackFront.png';
+					Img.player.src = '/client/images/64bit/PennySpriteAttackFront.png';
 				}
 			}
 			else {
 				if(DOWN == self.facing) {
-					Img.player.src = '/client/images/PennySpriteFront.png';
+					Img.player.src = '/client/images/64bit/PennySpriteFront.png';
 				}
 				else if (UP == self.facing) {
-					Img.player.src = '/client/images/PennySpriteBack.png';
+					Img.player.src = '/client/images/64bit/PennySpriteBack.png';
 				}
 				else if (RIGHT == self.facing) {
-					Img.player.src = '/client/images/PennySpriteRight.png';
+					Img.player.src = '/client/images/64bit/PennySpriteRight.png';
 				}
 				else if (LEFT == self.facing) {
-					Img.player.src = '/client/images/PennySpriteLeft.png';
+					Img.player.src = '/client/images/64bit/PennySpriteLeft.png';
 				}
 				else {
-					Img.player.src = '/client/images/PennySpriteFront.png';
+					Img.player.src = '/client/images/64bit/PennySpriteFront.png';
 				}
 			}
 			
@@ -122,6 +123,9 @@
 				if(pack.attacking !== undefined) {
 					p.attacking = pack.attacking;
 				}
+				if(pack.map !== undefined) {
+					p.map = pack.map;
+				}
 			}
 		}
 	});
@@ -136,18 +140,29 @@
 		if(!selfId) {
 			return;
 		}
-		ctx.clearRect(0,0,500,500);
-		drawMap();
+		ctx.clearRect(0,0,576,576);
+		ctx.fillStyle = 'black';
+		ctx.fillRect(0,0,WIDTH,HEIGHT);
+		drawMap(Player.list[selfId].map);
 		drawScore();
 		for(var i in Player.list) {
 			Player.list[i].draw();
 		}
 	}, 1000/60);
 	
-	var drawMap = function(pack) {
-		var x = WIDTH/2 - Player.list[selfId].x;
-		var y = HEIGHT/2 - Player.list[selfId].y;
-		ctx.drawImage(Img.map,x,y);
+	var drawMap = function(map) {
+		var playerX = WIDTH/2 - Player.list[selfId].x;
+		var playerY = HEIGHT/2 - Player.list[selfId].y;
+		//ctx.drawImage(Img.map,x,y);
+		for(var x = 0; x < map.length; x++) {
+			for(var y = 0; y < map.length; y++) {
+				if(map[x][y] == 3) {
+					var xPos = x*64+playerX;
+					var yPos = y*64+playerY;
+					ctx.drawImage(Img.floor,xPos,yPos);
+				}
+			}
+		}
 	}
 	
 	var drawScore = function() {

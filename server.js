@@ -18,6 +18,18 @@ var UP = "up";
 var DOWN = "down";
 var ATTACK = "attack";
 
+var createArray = function(length) {
+    var arr = new Array(length || 0),
+        i = length;
+
+    if (arguments.length > 1) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+    }
+
+    return arr;
+}
+
 var Entity = function(){
 	var self = {
 		x:250,
@@ -36,10 +48,38 @@ var Entity = function(){
 	return self;
 }
 
+
+
+var Map = function(size) {
+	var self = Entity();
+	self.grid = 
+	[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 1, 3, 3, 3, 1, 1, 1, 3, 1, 1, 1, 3, 3, 3, 1, 3, 1],
+	[1, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 1, 1, 3, 3, 3, 1, 3, 1],
+	[1, 3, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 1, 3, 1],
+	[1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1],
+	[1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1],
+	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+	self.height = self.grid.length;
+	self.width = self.grid[0].length;
+	
+	return self;
+}
+
 var Player = function(id){
 	var self = Entity();
-	self.x = 250;
-	self.y = 250;
+	self.x = 64;
+	self.y = 64;
 	self.id = id;
 	self.number = "" + Math.floor(10*Math.random());
 	self.name = "Player";
@@ -55,6 +95,8 @@ var Player = function(id){
 	self.attacking = false;
 	self.shouldAttack = false;
 	self.attackAnimation = 0;
+	self.map = Map(0);
+	self.playerMap = createArray(9,9);
 	
 	var super_update = self.update;
 	
@@ -63,6 +105,26 @@ var Player = function(id){
 		self.updateFacing();
 		self.updateAttacking();
 		super_update();
+	}
+	
+	//TODO: Update to only show the portion of the map that actually gets displayed.
+	self.updateMap = function() {
+		/*var playerX = self.x / 64;
+		var playerY = self.y / 64;
+		var playerMapDimension = 9;
+		
+		for(var x = 0; x < self.map.grid.width; x++) {
+			for(var y = 0; y < self.map.grid.height; y++) {
+				if( playerX-4+x > 0 && playerX-4+x < self.map.grid.width
+						&& playerY-4+y > 0 && playerY-4+y < self.map.grid.height) {
+					self.playerMap[x][y] = self.map.grid[playerX-4+x][playerY-4+y];
+				}
+				else {
+					self.playerMap[x][y] = 0;
+				}
+			}
+		}*/
+		self.playerMap = self.map.grid;
 	}
 	
 	self .updateAttacking = function() {
@@ -95,20 +157,29 @@ var Player = function(id){
 		self.spdY = 0;
 
 		if(self.pressingRight) {
-			self.spdX += self.maxSpeed;
+			if(self.map.grid[Math.floor((self.x + self.maxSpeed + 1)/64)][Math.floor(self.y/64)] == 3) {
+				self.spdX += self.maxSpeed;
+			}
 		}
 		if(self.pressingLeft) {
-			self.spdX -= self.maxSpeed;
+			if(self.map.grid[Math.floor((self.x - self.maxSpeed - 1)/64)][Math.floor(self.y/64)] == 3) {
+				self.spdX -= self.maxSpeed;
+			}
 		}
 		if(self.pressingUp) {
-			self.spdY -= self.maxSpeed;
+			if(self.map.grid[Math.floor(self.x/64)][Math.floor((self.y - self.maxSpeed)/64)] == 3) {
+				self.spdY -= self.maxSpeed;
+			}
 		}
 		if(self.pressingDown) {
-			self.spdY += self.maxSpeed;
+			if(self.map.grid[Math.floor(self.x/64)][Math.floor((self.y + self.maxSpeed)/64)] == 3) {
+				self.spdY += self.maxSpeed;
+			}
 		}
 	}
 	
 	self.getInitPack = function() {
+		self.updateMap();
 		return {
 		id:self.id,
 		x:self.x,
@@ -118,6 +189,7 @@ var Player = function(id){
 		hp:self.hp = 10,
 		hpMax:self.hpMax = 10,
 		score:self.score = 0,
+		map:self.playerMap,
 		};
 	}
 	
@@ -146,6 +218,7 @@ var Player = function(id){
 			score:self.score,
 			facing:self.facing,
 			attacking:self.shouldAttack,
+			map:self.playerMap,
 		}
 	}
 	
@@ -233,6 +306,7 @@ var removePack = {player:[]};
 setInterval(function (){
 	var pack = {
 		player:Player.update(),
+		
 	}
 
 	for (var i in SOCKET_LIST) {
