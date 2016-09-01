@@ -157,22 +157,22 @@ var Player = function(id){
 		self.spdY = 0;
 
 		if(self.pressingRight) {
-			if(self.map.grid[Math.floor((self.x + self.maxSpeed + 1)/64)][Math.floor(self.y/64)] == 3) {
+			if(self.map.grid[Math.floor((self.x + self.maxSpeed + 32)/64)][Math.floor(self.y/64)] == 3) {
 				self.spdX += self.maxSpeed;
 			}
 		}
 		if(self.pressingLeft) {
-			if(self.map.grid[Math.floor((self.x - self.maxSpeed - 1)/64)][Math.floor(self.y/64)] == 3) {
+			if(self.map.grid[Math.floor((self.x - self.maxSpeed - 32)/64)][Math.floor(self.y/64)] == 3) {
 				self.spdX -= self.maxSpeed;
 			}
 		}
 		if(self.pressingUp) {
-			if(self.map.grid[Math.floor(self.x/64)][Math.floor((self.y - self.maxSpeed)/64)] == 3) {
+			if(self.map.grid[Math.floor(self.x/64)][Math.floor((self.y - self.maxSpeed - 32)/64)] == 3) {
 				self.spdY -= self.maxSpeed;
 			}
 		}
 		if(self.pressingDown) {
-			if(self.map.grid[Math.floor(self.x/64)][Math.floor((self.y + self.maxSpeed)/64)] == 3) {
+			if(self.map.grid[Math.floor(self.x/64)][Math.floor((self.y + self.maxSpeed + 32)/64)] == 3) {
 				self.spdY += self.maxSpeed;
 			}
 		}
