@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Reyzed Gaming - {{streamer}}</title>.
+		
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Bootstrap -->
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+ 
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		
+		<link href="/client/twitch/style/style.css" type="text/css" rel="stylesheet" />
+	</head>
+	<body class="text-center">
+		<header id="nav">
+			<nav id="navbar" class="navbar navbar-default navbar-static-top">
+				<div class="container-fluid row text-right">
+					<div class="navbar-header">
+						<h4>
+							<a class="navbar-brand vertical-center" href="/">Reyzed</a>
+						</h4>
+					</div>
+					<!--<ul class="nav navbar-nav nav-pills pull-right">
+					  <li role="presentation">
+						<a class="navbar-link" href="#">
+						  <h4>Following</h4>
+						</a>
+					  </li>
+					  <li role="presentation">
+						<a class="navbar-link" href="#">
+						  <h4>Login</h4>
+						</a>
+					  </li>
+					</ul>-->
+				</div>
+			</nav>
+		</header>
+		<main class="content-section">
+			<div class="row player-section">
+				<div class="col-xs-0 col-md-2 col-lg-2"></div>
+				<div class="col-xs-12 col-md-8 col-lg-8">
+					<!-- twitch player -->
+					<div class="embed-responsive embed-responsive-16by9">
+						<div>
+							<iframe class="player embed-responsive-item" src="https://player.twitch.tv/?channel={{streamer}}&autoplay=true"></iframe>
+						</div>
+					</div>
+				<div class="col-xs-0 col-md-2 col-lg-2"></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-0 col-md-2 col-lg-2"></div>
+				<div class="center col-xs-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
+					<!-- Game Canvas -->
+						<canvas id="ctx" width="576" height="576" style="border:1px solid #000000;"></canvas>
+					<!-- Twitch Chat -->
+						<iframe class="chat" height="576" src="https://www.twitch.tv/{{streamer}}/chat?popout="></iframe>
+				</div>
+				<div class="col-xs-0 col-md-2 col-lg-2"></div>
+			</div>
+			
+		</main>
+		
+		
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <!--<script src="bootstrap-3.3.7/js/bootstrap.min.js"></script>-->
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		
+		<script src="/client/scripts/gameScript.js"></script>
+	</body>
+</html>

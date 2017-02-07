@@ -1,219 +1,233 @@
-<canvas id="ctx" width="576" height="576" style="border:1px solid #000000;"></canvas>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Reyzed Gaming</title>
+		
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<!-- Font-Awesome -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+		<!-- Bootstrap -->
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		
+		<link href="/client/style/style.css" type="text/css" rel="stylesheet" />
+	</head>
+	<body class="text-center">
+		<header id="nav">
+			<nav id="navbar" class="navbar navbar-default navbar-static-top">
+				<div class="container-fluid row text-right">
+					<div class="navbar-header">
+						<h4>
+							<a class="navbar-brand vertical-center" href="/">Reyzed</a>
+						</h4>
+					</div>
+					<!--<ul class="nav navbar-nav nav-pills pull-right">
+					  <li role="presentation">
+						<a class="navbar-link" href="#">
+						  <h4>Following</h4>
+						</a>
+					  </li>
+					  <li role="presentation">
+						<a class="navbar-link" href="#">
+						  <h4>Login</h4>
+						</a>
+					  </li>
+					</ul>-->
+				</div>
+			</nav>
+		</header>
+		<main>
+			<section id="mainPlayer">
+				<div class="row">
+					<div class="col-xs-0 col-sm-2 col-md-3 col-lg-3"></div>
+					<div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+						<h1>Featured Streamer</h1>
+						<div class="embed-responsive embed-responsive-16by9">
+							<div>
+								<iframe class="player" src="https://player.twitch.tv/?channel=pennystone&autoplay=true" class="embed-responsive-item"></iframe>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-0 col-sm-2 col-md-3 col-lg-3"></div>
+				</div>
+			</section>
+			<section id="featuredColumns">
+				<div class="row text-center">
+                    <div class="col-xs-0 col-sm-2 col-md-3 col-lg-3"></div>
+					<div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+						<h4>Twitch Streamers</h4>
+                            <ul id="twitch-feat-list" class="list-group text-left">
+                            </ul>
+					</div>
+					<div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+						<h4>Beam Streamers</h4>
+                            <ul id="beam-feat-list" class="list-group text-left">
+                            </ul>
+					</div>
+				</div>
+				<div class="col-xs-0 col-sm-2 col-md-3 col-lg-3"></div>
+			</section>
+		</main>
+		<footer>
+		<div class="col-xs-12 col-md-12 col-lg-12">
+		  <div class="col-xs-1 col-md-1 col-lg-2">
+		  </div>
+		  <div class="col-xs-11 col-md-11 col-lg-10">
+			<ul class="list-inline text-left">
+			  <li>
+				<a class="navbar-link" href="#title">Home</a>
+			  </li>
+			  <i class="fa fa-ellipsis-v"></i>
+			  <li>
+				<a class="navbar-link" href="#about">About</a>
+			  </li>
+			  <i class="fa fa-ellipsis-v"></i>
+			  <li>
+				<a class="navbar-link" href="#contact">Contact</a>
+			  </li>
+			</ul>
+			<br/>
+			<p class="text-muted small text-left">
+			  Copyright &copy; Reyzed Gaming 2016. All Rights Reserved
+			</p>
+		  </div>
+		</div>
+	  </footer>
+	  <script src='//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-58d22c749295bca52f487966e382a94a495ac103faca9206cbd160bdf8aedf2a.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+	  <script>
+		console.log("script");
+		var twitchLink = "https://twitch.tv/";
+		var beamLink = "https://beam.pro/";
+		var twitchStreamAPI = "https://wind-bow.gomix.me/twitch-api/streams/$streamer?callback=?";
+		var twitchChannelAPI = "https://wind-bow.gomix.me/twitch-api/channels/$streamer?callback=?";
+		var beamAPI = "https://beam.pro/api/v1/channels/$channel";
 
-<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-<script>
-	var LEFT = "left";
-	var RIGHT = "right";
-	var UP = "up";
-	var DOWN = "down";
-	var socket = io();
-	var selfId = null;
-	var WIDTH = 576;
-	var HEIGHT = 576;
-	var CURRENCY_NAME = "Shiny Pennies";
-	
-	var ctx = document.getElementById("ctx").getContext("2d");
-	ctx.font = '30px Arial';
-	
-	var Img = {};
-	Img.player = new Image();
-	Img.player.src = '/client/images/64bit/PennySpriteFront.png';
-	Img.floor = new Image();
-	Img.floor.src = '/client/images/64bit/floor.png';
-	
-	var Player = function(initPack) {
-		var self = {};
-		self.id = initPack.id;
-		self.number = initPack.number;
-		self.x = initPack.x;
-		self.y = initPack.y;
-		self.name = initPack.name;
-		self.hp = initPack.hp;
-		self.hpMax = initPack.hpMax;
-		self.score = initPack.score;
-		Player.list[self.id] = self;
-		self.attacking = false;
-		self.facing = DOWN;
-		self.map = initPack.map;
+		var twitchStreams = ['pennystone', 'itzcascadexx', 'wikkedred', 'JustAFigment', 'wookiewebster316'];
+		var beamStreams = ['cgdivi', 'queenofart', 'dapvhirgaming', 'blnk', 'hunkstaban'];
+
+		var channels = [];
+		channels["beam"] = beamStreams;
+		channels["twitch"] = twitchStreams;
 		
-		self.draw = function() {
-			var x = self.x - Player.list[selfId].x + WIDTH/2;
-			var y = self.y - Player.list[selfId].y + HEIGHT/2;
-		
-			var hpWidth = 50 * self.hp / self.hpMax;			
-			var width = Img.player.width;
-			var height = Img.player.height;
+		var updateTwitchStream = function(streamName) {
+			$.getJSON(twitchStreamAPI.replace('$streamer', streamName), function(data) {
+			  if (data.status == '404') {
+				$("#"+streamName+"-ind").removeClass("ind-online");
+				$("#"+streamName+"-ind").removeClass("ind-offline");
+				$("#"+streamName+"-ind").removeClass("ind-deactivated");
+				
+				$("#"+streamName+"-ind").addClass("ind-deactivated");
+				$("#"+streamName+"-desc").text("Streamer has deactivated their channel or Twitch's API is currently down. Try refreshing the page. Sorry for any inconvenience.");
+			  }
+			  else if(null == data.stream || undefined == data.stream) {
+				$("#"+streamName+"-ind").removeClass("ind-online");
+				$("#"+streamName+"-ind").removeClass("ind-offline");
+				$("#"+streamName+"-ind").removeClass("ind-deactivated");
+				
+				$("#"+streamName+"-ind").addClass("ind-offline");
+				$("#"+streamName+"-desc").text("Offline");
+			  }
+			  else {
+				$("#"+streamName+"-ind").removeClass("ind-online");
+				$("#"+streamName+"-ind").removeClass("ind-offline");
+				$("#"+streamName+"-ind").removeClass("ind-deactivated");
+				
+				$("#"+streamName+"-ind").addClass("ind-online");
+				$("#"+streamName+"-desc").text(data.stream.channel.status);
+			  }
+			});
+		  };
+		  
+		  var updateTwitchChannel = function(streamName) {
+			$.getJSON(twitchChannelAPI.replace('$streamer', streamName), function(data) {
+				$("#"+streamName+"-img").attr("src", data.logo);
+				$("#"+streamName + "-name-heading").text(data.display_name);
+					  
+				updateTwitchStream(streamName);
+			});
+		  };
+		  
+		  var updateBeamChannel = function(streamName) {
+			$.get(beamAPI.replace('$channel', streamName, true), function(data) {
+			  $("#"+streamName+"-img").attr("src", data.user.avatarUrl);
+			  $("#"+streamName + "-name-heading").text(data.user.username);
+			  
+			  if ("true" == data.suspended) {
+				$("#"+streamName+"-ind").removeClass("ind-online");
+				$("#"+streamName+"-ind").removeClass("ind-offline");
+				$("#"+streamName+"-ind").removeClass("ind-deactivated");
+				
+				$("#"+streamName+"-ind").addClass("ind-deactivated");
+			  }
+			  else if(data.online) {
+				$("#"+streamName+"-ind").removeClass("ind-online");
+				$("#"+streamName+"-ind").removeClass("ind-offline");
+				$("#"+streamName+"-ind").removeClass("ind-deactivated");
+				
+				$("#"+streamName+"-ind").addClass("ind-online");
+				$("#"+streamName+"-desc").text(data.name);
+				
+			  }
+			  else {
+				$("#"+streamName+"-ind").removeClass("ind-online");
+				$("#"+streamName+"-ind").removeClass("ind-offline");
+				$("#"+streamName+"-ind").removeClass("ind-deactivated");
+				
+				$("#"+streamName+"-ind").addClass("ind-offline");
+				$("#"+streamName+"-desc").text("Offline");
+			  }
+			});
+		  }
+		  
+		  var createFrames = function(channelType) {
 			
-			ctx.fillStyle = 'red';
-			ctx.fillRect(x - hpWidth/2, y - 40, hpWidth,4);
-			
-			if(self.attacking) {
-				if(DOWN == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteAttackFront.png';
-				}
-				else if (UP == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteAttackBack.png';
-				}
-				else if (RIGHT == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteAttackRight.png';
-				}
-				else if (LEFT == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteAttackLeft.png';
-				}
-				else {
-					Img.player.src = '/client/images/64bit/PennySpriteAttackFront.png';
-				}
+			for(var i = 0; i < channels[channelType].length; i++) {
+			  var streamName = channels[channelType][i];
+			  var link = "/"+channelType+"/"+streamName;
+			  
+			  var element = "<a href=\"" + link 
+				+ "\"  target=\"_blank\" class=\"list-group-item\">" 
+				  + "<div id=\"" + streamName + "-frame\" class=\"row\">"
+					+ "<div id=\"" + streamName + "-title\" class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4\">"
+					  + "<img id=\"" + streamName + "-img\" style=\"float:left\" class=\"img-responsive stream-frame-img\" src=\"\" alt=\"No Logo Available D:\" height=\"50\" width=\"50\" >" 
+					+ "</div>"
+					+ "<div id=\"" + streamName + "-name\">"
+					  + "<h4 id=\"" + streamName + "-name-heading\">" + streamName + "</h4>"
+					+ "</div>"
+				  + "</div>"
+				  + "<div id=\"" + streamName + "-status\">"
+				  + "<i id=\"" + streamName + "-ind\" class=\"fa fa-circle ind-offline\" aria-hidden=\"true\">&nbsp;</i>" 
+					+ "<span id=\"" + streamName + "-desc\">"
+					  + "Offline"
+					+ "</span>"
+				  + "</div>"
+				+ "</a>";
+			  
+			  $("#"+channelType+"-feat-list").append(element);
+			  
+			  if("twitch" == channelType) {
+				updateTwitchChannel(streamName);
+			  }
+			  else if ("beam" == channelType) {
+				updateBeamChannel(streamName);
+			  }
+			  else {
+				console.log("erroneous channel type");
+			  }
 			}
-			else {
-				if(DOWN == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteFront.png';
-				}
-				else if (UP == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteBack.png';
-				}
-				else if (RIGHT == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteRight.png';
-				}
-				else if (LEFT == self.facing) {
-					Img.player.src = '/client/images/64bit/PennySpriteLeft.png';
-				}
-				else {
-					Img.player.src = '/client/images/64bit/PennySpriteFront.png';
-				}
-			}
-			
-			ctx.drawImage(Img.player,
-			0,0,Img.player.width, Img.player.height,
-			x-width/2, y-height/2,width,height);
-		}
-		
-		return self;
-	}
-	Player.list = {};
-	
-	socket.on('init',function(data) {
-		if(data.selfId) {
-			selfId = data.selfId;
-		}
-		for(var i = 0; i <data.player.length; i++) {
-			new Player(data.player[i]);
-		}
-	});
-	
-	socket.on('update', function(data) {
-		for(var i =0; i < data.player.length; i++) {
-			var pack = data.player[i];
-			var p = Player.list[pack.id];
-			if(p) {
-				if(pack.x !== undefined) {
-					p.x = pack.x;
-				}
-				if(pack.y !== undefined) {
-					p.y = pack.y;
-				}
-				if(pack.hp !== undefined) {
-					p.hp = pack.hp;
-				}
-				if(pack.score !== undefined) {
-					p.score = pack.score;
-				}
-				if(pack.facing !== undefined) {
-					p.facing = pack.facing;
-				}
-				if(pack.attacking !== undefined) {
-					p.attacking = pack.attacking;
-				}
-				if(pack.map !== undefined) {
-					p.map = pack.map;
-				}
-			}
-		}
-	});
-	
-	socket.on('remove', function(data) {
-		for(var i = 0; i < data.player.length; i++) {
-			delete Player.list[data.player[i]];
-		}
-	});
-	
-	setInterval(function() {
-		if(!selfId) {
-			return;
-		}
-		ctx.clearRect(0,0,576,576);
-		ctx.fillStyle = 'black';
-		ctx.fillRect(0,0,WIDTH,HEIGHT);
-		drawMap(Player.list[selfId].map);
-		drawScore();
-		for(var i in Player.list) {
-			Player.list[i].draw();
-		}
-	}, 1000/60);
-	
-	var drawMap = function(map) {
-		var playerX = WIDTH/2 - Player.list[selfId].x;
-		var playerY = HEIGHT/2 - Player.list[selfId].y;
-		//ctx.drawImage(Img.map,x,y);
-		for(var x = 0; x < map.length; x++) {
-			for(var y = 0; y < map[x].length; y++) {
-				if(map[x][y] == 3) {
-					var xPos = x*64+playerX;
-					var yPos = y*64+playerY;
-					ctx.drawImage(Img.floor,xPos,yPos);
-				}
-			}
-		}
-	}
-	
-	var drawScore = function() {
-		ctx.fillStyle = 'white';
-		ctx.fillText(CURRENCY_NAME + ": " + Player.list[selfId].score,30,50);
-	}
-	
-	document.onkeydown = function(event) {
-		// Player holding up arrow or w
-		if (38 == event.keyCode || 87 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'up', state:true});
-		}
-		// Player holding down arrow or s
-		else if (40 == event.keyCode || 83 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'down', state:true});
-		}
-		// Player holding left arrow or a
-		else if (37 == event.keyCode || 65 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'left', state:true});
-		}
-		// Player holding right arrow or d
-		else if (39 == event.keyCode || 68 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'right', state:true});
-		}
-		// Player holding right arrow or d
-		else if (32 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'attack', state:true});
-		}
-	}
-	
-	document.onkeyup = function(event) {
-		// Player let go of up arrow or w
-		if (38 == event.keyCode || 87 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'up', state:false});
-		}
-		// Player let go of down arrow or s
-		else if (40 == event.keyCode || 83 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'down', state:false});
-		}
-		// Player let go of left arrow or a
-		else if (37 == event.keyCode || 65 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'left', state:false});
-		}
-		// Player let go of right arrow or d
-		else if (39 == event.keyCode || 68 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'right', state:false});
-		}
-		// Player holding right arrow or d
-		else if (32 == event.keyCode) {
-			socket.emit('keyPress',{inputId:'attack', state:false});
-		}
-	}
-	
-</script>
+		  };
+
+		$(document).ready(function() {
+		  
+		  // create the featured streamer frames under the main frame.
+		  // essentially run everything.
+		  createFrames("twitch");
+		  createFrames("beam");
+		});
+	  </script>
+	</body>
+</html>

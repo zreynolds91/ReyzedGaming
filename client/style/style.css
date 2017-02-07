@@ -1,0 +1,11 @@
+.ind-online {
+  color: lime;
+}
+
+.ind-offline {
+  color: red;
+}
+
+.ind-deactivated {
+  color: gray;
+}

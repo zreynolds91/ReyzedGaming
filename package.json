@@ -1,19 +1,27 @@
 {
-  "name": "pvpenny_game",
-  "version": "0.0.1",
-  "description": "Game specific to the twitch streamer known as PvPenny or PennyStoneHome.",
-  "main": "app.js",
+  "name": "reyzed_gaming",
+  "version": "1.0.0",
+  "description": "Site that allows viewers of twitch and beam streams to watch their favorite streamers while playing a small browser based game at the same time.",
+  "main": "index.js",
   "scripts": {
     "test": "test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zreynolds91/PvPennyGame.git"
+    "url": "git+https://github.com/zreynolds91/ReyzedGaming.git"
   },
+  "keywords": [
+    "twitch",
+    "beam"
+  ],
   "author": "zreynolds",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/zreynolds91/PvPennyGame/issues"
+    "url": "https://github.com/zreynolds91/ReyzedGaming/issues"
   },
-  "homepage": "https://github.com/zreynolds91/PvPennyGame#readme"
+  "homepage": "https://github.com/zreynolds91/ReyzedGaming#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "handlebars": "^4.0.6"
+  }
 }
