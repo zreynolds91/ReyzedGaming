@@ -182,13 +182,13 @@ var Room = function(param) {
             isLastRoom = true;
         }
         
-        for(var h = 0; h < self.height; h++) {
+        for(var w = 0; w < self.width; w++) {
             var row = [];
-            for(var w = 0; w < self.width; w++) {
+            for(var h = 0; h < self.height; h++) {
                 
                 if(Math.floor(self.height / 2) == h && self.width - 1 == w) {
                     
-                    if(DOWN == self.previousRoom) {
+                    if(RIGHT == self.previousRoom) {
                         row.push(2);
                     }
                     else if(remainingDoors > 0) {
@@ -213,10 +213,7 @@ var Room = function(param) {
                 }
                 else if (Math.floor(self.height / 2) == h && 0 == w) {
                     
-                    if (ROOM_START == self.roomType) {
-                        row.push(2);
-                    }
-                    else if (UP == self.previousRoom) {
+                    if (LEFT == self.previousRoom) {
                         row.push(2);
                     }
                     else if(remainingDoors > 0) {
@@ -241,7 +238,7 @@ var Room = function(param) {
                 }
                 else if(Math.floor(self.width / 2) == w  && self.height - 1 == h) {
                     
-                    if (RIGHT == self.previousRoom) {
+                    if (DOWN == self.previousRoom) {
                         row.push(2);
                     }
                     else if(remainingDoors > 0) {
@@ -266,7 +263,10 @@ var Room = function(param) {
                 }
                 else if (Math.floor(self.width / 2) == w  && 0 == h) {
                     
-                    if (LEFT == self.previousRoom) {
+                    if (ROOM_START == self.roomType) {
+                        row.push(2);
+                    }
+                    else if (UP == self.previousRoom) {
                         row.push(2);
                     }
                     else if(remainingDoors > 0) {
@@ -532,8 +532,11 @@ var Player = function(param){
                 };
                 
                 self.roomNum = self.map.moveRight(paramOut);
+                //left most x position for the room.
                 self.x = 64;
-                self.y = 64;
+                // Get the middle y position for the room being moved to.
+                self.y = (Math.ceil(self.map.roomList[self.roomNum].height/2) * 64) - 32;
+                
                 return;
             }
         }
@@ -555,8 +558,10 @@ var Player = function(param){
                     roomNum: self.roomNum,
                 };
                 self.roomNum = self.map.moveLeft(paramOut);
-                self.x = 64;
-                self.y = 64;
+                // Right most tile of the room to be entered.
+                self.x = 64 * (self.map.roomList[self.roomNum].width - 1);
+                // Get the middle y position for the room being moved to.
+                self.y = (Math.ceil(self.map.roomList[self.roomNum].height/2) * 64) - 32;
                 return;
             }
         }
@@ -575,8 +580,10 @@ var Player = function(param){
                     roomNum: self.roomNum,
                 };
                 self.roomNum = self.map.moveUp(paramOut);
-                self.x = 64;
-                self.y = 64;
+                // Get the middle x position for the room being moved to.
+                self.x = (Math.ceil(self.map.roomList[self.roomNum].width/2) * 64) - 32;
+                // Get the bottom most tile of the room being moved to.
+                self.y = 64 * (self.map.roomList[self.roomNum].height - 1);
                 return;
             }
         }
@@ -595,7 +602,9 @@ var Player = function(param){
                     roomNum: self.roomNum,
                 };
                 self.roomNum = self.map.moveDown(paramOut);
-                self.x = 64;
+                // Get the middle x position for the room being moved to.
+                self.x = (Math.ceil(self.map.roomList[self.roomNum].width/2) * 64) - 32;
+                // top most tile for the room being moved to.
                 self.y = 64;
                 return;
             }
