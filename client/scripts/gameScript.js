@@ -25,7 +25,9 @@ Img.projectiles = {};
 Img.floor = new Image();
 Img.floor.src = '/client/images/64bit/floor.png';
 Img.door = new Image();
-Img.door.src = '/client/images/64bit/floor.png';
+Img.door.src = '/client/images/64bit/door.png';
+Img.finalDoor = new Image();
+Img.finalDoor.src = '/client/images/64bit/doorFinal.png';
 
 var Player = function(initPack) {
     var self = {};
@@ -195,6 +197,11 @@ var drawMap = function(map) {
                 var xPos = x*64+playerX;
                 var yPos = y*64+playerY;
                 ctx.drawImage(Img.door,xPos,yPos);
+            }
+            else if (5 == map[x][y]) {
+                var xPos = x*64+playerX;
+                var yPos = y*64+playerY;
+                ctx.drawImage(Img.finalDoor,xPos,yPos);
             }
         }
     }

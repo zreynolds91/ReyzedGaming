@@ -518,7 +518,7 @@ var Player = function(param){
             if(tileType == 3) {
                 self.spdX += self.maxSpeed;
             }
-            else if(tileType == 5) {
+            else if(tileType == 5 && self.score <= SCORE_LOWER_LIMIT) {
                 self.score +=5;
                 Player.gameOver({streamKey: self.streamKey,});
             }
@@ -545,7 +545,7 @@ var Player = function(param){
             if(tileType == 3) {
                 self.spdX -= self.maxSpeed;
             }
-            else if(tileType == 5) {
+            else if(tileType == 5 && self.score <= SCORE_LOWER_LIMIT) {
                 self.score +=5;
                 Player.gameOver({streamKey: self.streamKey,});
             }
@@ -570,7 +570,7 @@ var Player = function(param){
             if(tileType == 3) {
                 self.spdY -= self.maxSpeed;
             }
-            else if(tileType == 5) {
+            else if(tileType == 5 && self.score <= SCORE_LOWER_LIMIT) {
                 self.score +=5;
                 Player.gameOver({streamKey: self.streamKey,});
             }
@@ -592,7 +592,7 @@ var Player = function(param){
             if(tileType == 3) {
                 self.spdY += self.maxSpeed;
             }
-            else if(tileType == 5) {
+            else if(tileType == 5 && self.score <= SCORE_LOWER_LIMIT) {
                 self.score +=5;
                 Player.gameOver({streamKey: self.streamKey,});
             }
