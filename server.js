@@ -31,7 +31,7 @@ app.get('/beam/:name', function (req, res) {
     res.render('beam-stream');
 });
 
-var server = serv.listen(3000, function () {
+var server = serv.listen(8080, function () {
    var host = server.address().address;
    var port = server.address().port;
 
