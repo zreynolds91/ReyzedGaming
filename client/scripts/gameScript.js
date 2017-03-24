@@ -9,10 +9,10 @@ var selfId = null;
 var WIDTH = 576;
 var HEIGHT = 576;
 var CURRENCY_NAME = "Score";
-var SPRITE_FRONT = '/client/images/64bit/PennySpriteFront.png';
-var SPRITE_BACK = '/client/images/64bit/PennySpriteBack.png';
-var SPRITE_LEFT = '/client/images/64bit/PennySpriteLeft.png';
-var SPRITE_RIGHT = '/client/images/64bit/PennySpriteRight.png';
+var SPRITE_FRONT = '/client/images/64bit/WizardSpriteFront.png';
+var SPRITE_BACK = '/client/images/64bit/WizardSpriteBack.png';
+var SPRITE_LEFT = '/client/images/64bit/WizardSpriteLeft.png';
+var SPRITE_RIGHT = '/client/images/64bit/WizardSpriteRight.png';
 var PROJECTILE = '/client/images/64bit/Projectile.png';
 
 var canvas = document.getElementById("ctx");
