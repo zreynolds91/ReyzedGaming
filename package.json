@@ -1,7 +1,7 @@
 {
   "name": "reyzed_gaming",
   "version": "1.0.0",
-  "description": "Site that allows viewers of twitch and beam streams to watch their favorite streamers while playing a small browser based game at the same time.",
+  "description": "Site that allows viewers of twitch and mixer streams to watch their favorite streamers while playing a small browser based game at the same time.",
   "main": "index.js",
   "scripts": {
     "test": "test"
@@ -12,7 +12,7 @@
   },
   "keywords": [
     "twitch",
-    "beam"
+    "mixer"
   ],
   "author": "zreynolds",
   "license": "ISC",

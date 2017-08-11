@@ -16,20 +16,20 @@ app.get('/', function (req, res) {
 
 app.get('/twitch/:name', function (req, res) {
     var hbs = exphbs.create({helpers: {streamer : req.params.name,}});
-    
+
     app.engine('handlebars', hbs.engine);
     app.set('view engine', 'handlebars');
-    
+
     res.render('twitch-stream');
 });
 
-app.get('/beam/:name', function (req, res) {
+app.get('/mixer/:name', function (req, res) {
     var hbs = exphbs.create({helpers: {streamer : req.params.name,}});
-    
+
     app.engine('handlebars', hbs.engine);
     app.set('view engine', 'handlebars');
-    
-    res.render('beam-stream');
+
+    res.render('mixer-stream');
 });
 
 var server = serv.listen(8080, function () {
@@ -133,7 +133,7 @@ var Room = function(param) {
         left: undefined,
         right: undefined,
     };
-    
+
     if(undefined !== param.height) {
         self.height = param.height;
     }
@@ -165,30 +165,30 @@ var Room = function(param) {
             self.doors.down = self.parent;
         }
     }
-    
+
     /**
     * TODO: shorten this method somehow. Look at the door placement if/else statements and shorten,
     * they are all pretty much doing the same thing.
     */
     self.generateRoomGrid = function() {
-        
+
         var hasPathDoorYet = false;
         var remainingDoors = 3;
         var isLastRoom = false;
-        
+
         if(ROOM_DEAD_END == self.roomType || ROOM_START == self.roomType) {
             remainingDoors = 0;
         }
         else if (ROOM_PATH == self.roomType && 0 == param.roomsLeft) {
             isLastRoom = true;
         }
-        
+
         for(var w = 0; w < self.width; w++) {
             var row = [];
             for(var h = 0; h < self.height; h++) {
-                
+
                 if(Math.floor(self.height / 2) == h && self.width - 1 == w) {
-                    
+
                     if(RIGHT == self.previousRoom) {
                         row.push(2);
                     }
@@ -213,7 +213,7 @@ var Room = function(param) {
                     }
                 }
                 else if (Math.floor(self.height / 2) == h && 0 == w) {
-                    
+
                     if (LEFT == self.previousRoom) {
                         row.push(2);
                     }
@@ -238,7 +238,7 @@ var Room = function(param) {
                     }
                 }
                 else if(Math.floor(self.width / 2) == w  && self.height - 1 == h) {
-                    
+
                     if (DOWN == self.previousRoom) {
                         row.push(2);
                     }
@@ -263,7 +263,7 @@ var Room = function(param) {
                     }
                 }
                 else if (Math.floor(self.width / 2) == w  && 0 == h) {
-                    
+
                     if (ROOM_START == self.roomType) {
                         row.push(2);
                     }
@@ -271,7 +271,7 @@ var Room = function(param) {
                         row.push(2);
                     }
                     else if(remainingDoors > 0) {
-                        
+
                         if(Math.random() < 1/remainingDoors && !hasPathDoorYet) {
                             if(isLastRoom){
                                 row.push(5);
@@ -304,19 +304,19 @@ var Room = function(param) {
             self.grid.push(row);
         }
     }
-    
+
     self.generateRoomGrid();
-    
+
     return self;
 }
 
 var Map = function(param) {
     var self = Entity(param);
-    
+
     self.numOfRooms = 0;
     self.roomsLeft = MAX_NUM_OF_PATH_ROOMS;
     self.roomList = {};
-    
+
     if(undefined !== param.streamKey) {
         if(Map.list[param.streamKey]) {
             return Map.list[param.streamKey];
@@ -327,13 +327,13 @@ var Map = function(param) {
         console.log("Map being created without a streamKey.");
         return undefined;
     }
-    
-    self.addRoom = function(room) {        
+
+    self.addRoom = function(room) {
         room.roomNum = self.numOfRooms;
         self.roomList[self.numOfRooms] = room;
         self.numOfRooms++;
     }
-    
+
     self.createRoom = function(param) {
         var roomWidth, roomHeight;
         if(undefined !== param && undefined !== param.width && undefined !== param.width != 0) {
@@ -342,21 +342,21 @@ var Map = function(param) {
         else {
             roomWidth = ROOM_SIZE_DEFAULT + Math.floor(Math.random() * 15);
         }
-        
+
         if(undefined != param && param.height != undefined && param.height != 0) {
             roomHeight = height;
         }
         else {
             roomHeight = ROOM_SIZE_DEFAULT + Math.floor(Math.random() * 15);
         }
-        
+
         if(0 == roomWidth % 2) {
             roomWidth--;
         }
         if(0 == roomHeight % 2) {
             roomHeight--;
         }
-        
+
         var roomType = ROOM_START;
         if(undefined == param) {}
         else if(0 == param.doorType) {
@@ -366,14 +366,14 @@ var Map = function(param) {
             roomType = ROOM_PATH;
             self.roomsLeft--;
         }
-        
+
         var parent;
         var previousRoom;
         if(undefined !== param) {
             parent = param.parent;
             previousRoom = param.previousRoom;
         }
-        
+
         var roomParam = {
             width: roomWidth,
             height: roomHeight,
@@ -382,14 +382,14 @@ var Map = function(param) {
             previousRoom, previousRoom,
             parent: parent,
         };
-        
+
         var room = Room(roomParam);
         self.addRoom(room);
         return room;
     }
-    
+
     self.moveRight = function(paramIn) {
-        
+
         if(undefined == self.roomList[paramIn.roomNum].doors.right) {
             var paramOut = {
                 previousRoom: LEFT,
@@ -404,9 +404,9 @@ var Map = function(param) {
             return self.roomList[paramIn.roomNum].doors.right;
         }
     }
-    
+
     self.moveLeft = function(paramIn) {
-        
+
         if(undefined == self.roomList[paramIn.roomNum].doors.left) {
             var paramOut = {
                 previousRoom: RIGHT,
@@ -421,9 +421,9 @@ var Map = function(param) {
             return self.roomList[paramIn.roomNum].doors.left;
         }
     }
-    
+
     self.moveDown = function(paramIn) {
-        
+
         if(undefined == self.roomList[paramIn.roomNum].doors.down) {
             var paramOut = {
                 previousRoom: UP,
@@ -438,9 +438,9 @@ var Map = function(param) {
             return self.roomList[paramIn.roomNum].doors.down;
         }
     }
-    
+
     self.moveUp = function(paramIn) {
-        
+
         if(undefined == self.roomList[paramIn.roomNum].doors.up) {
             var paramOut = {
                 previousRoom: DOWN,
@@ -455,11 +455,11 @@ var Map = function(param) {
             return self.roomList[paramIn.roomNum].doors.up;
         }
     }
-    
+
     self.createRoom();
-    
+
     Map.list[self.streamKey] = self;
-    
+
     return self;
 }
 Map.list = {}
@@ -486,16 +486,16 @@ var Player = function(param){
     self.playerMap;
     self.streamKey = param.streamKey;
     self.isGameOver = false;
-    
+
     if(Map.list[self.streamKey]) {
         self.map = Map.list[self.streamKey];
     }
     else {
         self.map = Map({streamKey: self.streamKey});
     }
-    
+
     var super_update = self.update;
-    
+
     self.update = function() {
         self.updateSpd();
         self.updateMap();
@@ -503,13 +503,13 @@ var Player = function(param){
         self.updateProjectiles(self.mouseAngle);
         super_update();
     }
-	
+
 	self.updateMap = function() {
 		self.playerMap = self.map.roomList[self.roomNum].grid;
 	}
-    
+
     self.playerMap = self.map.roomList[self.roomNum].grid;
-    
+
     self.updateSpd = function(){
         self.spdX = 0;
         self.spdY = 0;
@@ -524,20 +524,20 @@ var Player = function(param){
                 Player.gameOver({streamKey: self.streamKey,});
             }
             else if(tileType == 2 || tileType == 0) {
-                
+
                 var previousYRatio = self.y / self.map.height;
                 var paramOut = {
                     doorType: self.map.roomList[self.roomNum].grid[Math.floor(
                         (self.x + self.maxSpeed + 32)/64)][Math.floor(self.y/64)],
                     roomNum: self.roomNum,
                 };
-                
+
                 self.roomNum = self.map.moveRight(paramOut);
                 //left most x position for the room.
                 self.x = 64;
                 // Get the middle y position for the room being moved to.
                 self.y = (Math.ceil(self.map.roomList[self.roomNum].height/2) * 64) - 32;
-                
+
                 return;
             }
         }
@@ -551,7 +551,7 @@ var Player = function(param){
                 Player.gameOver({streamKey: self.streamKey,});
             }
             else if(tileType == 2 || tileType == 0) {
-                            
+
                 var previousYRatio = self.y / self.map.height;
                 var paramOut = {
                     doorType: self.map.roomList[self.roomNum].grid[Math.floor(
@@ -611,7 +611,7 @@ var Player = function(param){
             }
         }
     }
-    
+
     self.getInitPack = function() {
         self.updateMap();
         return {
@@ -628,7 +628,7 @@ var Player = function(param){
         room:self.roomNum,
         };
     }
-    
+
     self.updateFacing = function() {
         if (self.pressingRight && !self.pressingLeft) {
             self.facing = RIGHT;
@@ -643,7 +643,7 @@ var Player = function(param){
             self.facing = DOWN;
         }
     }
-    
+
     self.updateProjectiles = function(angle) {
         if(true == self.pressingShoot) {
             var param = {
@@ -657,7 +657,7 @@ var Player = function(param){
             var projectile = Projectile(param);
         }
     }
-    
+
     self.getUpdatePack = function() {
         return {
             id:self.id,
@@ -672,9 +672,9 @@ var Player = function(param){
             isGameOver:self.isGameOver,
         }
     }
-    
+
     Player.list[self.id] = self;
-    
+
     initPack.player.push(self.getInitPack());
     return self;
 }
@@ -685,12 +685,12 @@ Player.onConnect = function(socket){
     var urlArray = referer.split('/');
     var urlLength = urlArray.length;
     var streamKey = urlArray[urlLength-2] + '-' + urlArray[urlLength-1];
-    
+
     var param = {
         id:socket.id,
         streamKey:streamKey,
     };
-    
+
     var player = Player(param);
     socket.on('keyPress', function(data) {
         if(LEFT == data.inputId) {
@@ -718,7 +718,7 @@ Player.onConnect = function(socket){
         player:Player.getAllInitPack(),
         projectile:[],
     });
-    
+
     socket.on('restart', function() {
         player.isGameOver = false;
         player.roomNum = 0;
@@ -760,7 +760,7 @@ Player.update = function() {
 Player.gameOver = function(param) {
     for(var i in Player.list) {
         var p = Player.list[i];
-        
+
         if(param.streamKey == p.streamKey) {
             p.isGameOver = true;
         }
@@ -774,10 +774,10 @@ var Projectile = function(param) {
     self.spdX = Math.cos(param.angle/180*Math.PI)*10;
     self.spdY = Math.sin(param.angle/180*Math.PI)*10;
     self.parent = param.parent;
-    
+
     self.timer = 0;
     self.toRemove = false;
-    
+
     var super_update = self.update;
     self.update = function() {
         if(self.timer > 100) {
@@ -785,7 +785,7 @@ var Projectile = function(param) {
         }
         self.timer++;
         super_update();
-        
+
         for(var i in Player.list) {
             var p = Player.list[i];
             if(p.streamKey != self.streamKey
@@ -807,12 +807,12 @@ var Projectile = function(param) {
                         shooter.hp+=10;
                     }
                 }
-                
+
                 self.toRemove = true;
             }
         }
     }
-    
+
     self.getInitPack = function() {
         return {
             id:self.id,
@@ -822,7 +822,7 @@ var Projectile = function(param) {
             room:self.roomNum,
         };
     }
-    
+
     self.getUpdatePack = function() {
         return {
             id:self.id,
@@ -830,7 +830,7 @@ var Projectile = function(param) {
             y:self.y,
         };
     }
-    
+
     Projectile.list[self.id] = self;
     initPack.projectile.push(self.getInitPack());
     return self;
@@ -856,9 +856,9 @@ Projectile.update = function() {
 io.sockets.on('connection', function(socket) {
     socket.id=Math.random();
     SOCKET_LIST[socket.id] = socket;
-    
+
     Player.onConnect(socket);
-    
+
     socket.on('disconnect', function() {
         delete SOCKET_LIST[socket.id];
         Player.onDisconnect(socket);
@@ -866,7 +866,7 @@ io.sockets.on('connection', function(socket) {
 });
 
 io.sockets.on('disconnect', function(socket){
-    
+
 });
 var initPack ={player:[], projectile:[]};
 
@@ -888,5 +888,5 @@ setInterval(function (){
     initPack.projectile = [];
     removePack.player = [];
     removePack.projectile = [];
-    
+
 },1000/60);

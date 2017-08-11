@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Reyzed Gaming</title>
-		
+
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<!-- Font-Awesome -->
@@ -13,7 +13,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-		
+
 		<link href="/client/style/style.css" type="text/css" rel="stylesheet" />
 	</head>
 	<body class="text-center">
@@ -64,8 +64,8 @@
                             </ul>
 					</div>
 					<div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-						<h4>Beam Streamers</h4>
-                            <ul id="beam-feat-list" class="list-group text-left">
+						<h4>Mixer Streamers</h4>
+                            <ul id="mixer-feat-list" class="list-group text-left">
                             </ul>
 					</div>
 				</div>
@@ -101,25 +101,25 @@
 	  <script>
 		console.log("script");
 		var twitchLink = "https://twitch.tv/";
-		var beamLink = "https://beam.pro/";
+		var mixerLink = "https://mixer.com/";
 		var twitchStreamAPI = "https://wind-bow.gomix.me/twitch-api/streams/$streamer?callback=?";
 		var twitchChannelAPI = "https://wind-bow.gomix.me/twitch-api/channels/$streamer?callback=?";
-		var beamAPI = "https://beam.pro/api/v1/channels/$channel";
+		var mixerAPI = "https://mixer.com/api/v1/channels/$channel";
 
 		var twitchStreams = ['pennystone', 'itzcascadexx', 'wikked__', 'JustAFigment', 'wookiewebster316'];
-		var beamStreams = ['cgdivi', 'queenofart', 'dapvhirgaming', '3LANK', 'hunkstaban'];
+		var mixerStreams = ['cgdivi', 'queenofart', 'dapvhirgaming', '3LANK', 'hunkstaban'];
 
 		var channels = [];
-		channels["beam"] = beamStreams;
+		channels["mixer"] = mixerStreams;
 		channels["twitch"] = twitchStreams;
-		
+
 		var updateTwitchStream = function(streamName) {
 			$.getJSON(twitchStreamAPI.replace('$streamer', streamName), function(data) {
 			  if (data.status == '404') {
 				$("#"+streamName+"-ind").removeClass("ind-online");
 				$("#"+streamName+"-ind").removeClass("ind-offline");
 				$("#"+streamName+"-ind").removeClass("ind-deactivated");
-				
+
 				$("#"+streamName+"-ind").addClass("ind-deactivated");
 				$("#"+streamName+"-desc").text("Streamer has deactivated their channel or Twitch's API is currently down. Try refreshing the page. Sorry for any inconvenience.");
 			  }
@@ -127,7 +127,7 @@
 				$("#"+streamName+"-ind").removeClass("ind-online");
 				$("#"+streamName+"-ind").removeClass("ind-offline");
 				$("#"+streamName+"-ind").removeClass("ind-deactivated");
-				
+
 				$("#"+streamName+"-ind").addClass("ind-offline");
 				$("#"+streamName+"-desc").text("Offline");
 			  }
@@ -135,85 +135,85 @@
 				$("#"+streamName+"-ind").removeClass("ind-online");
 				$("#"+streamName+"-ind").removeClass("ind-offline");
 				$("#"+streamName+"-ind").removeClass("ind-deactivated");
-				
+
 				$("#"+streamName+"-ind").addClass("ind-online");
 				$("#"+streamName+"-desc").text(data.stream.channel.status);
 			  }
 			});
 		  };
-		  
+
 		  var updateTwitchChannel = function(streamName) {
 			$.getJSON(twitchChannelAPI.replace('$streamer', streamName), function(data) {
 				$("#"+streamName+"-img").attr("src", data.logo);
 				$("#"+streamName + "-name-heading").text(data.display_name);
-					  
+
 				updateTwitchStream(streamName);
 			});
 		  };
-		  
-		  var updateBeamChannel = function(streamName) {
-			$.get(beamAPI.replace('$channel', streamName, true), function(data) {
+
+		  var updateMixerChannel = function(streamName) {
+			$.get(mixerAPI.replace('$channel', streamName, true), function(data) {
 			  $("#"+streamName+"-img").attr("src", data.user.avatarUrl);
 			  $("#"+streamName + "-name-heading").text(data.user.username);
-			  
+
 			  if ("true" == data.suspended) {
 				$("#"+streamName+"-ind").removeClass("ind-online");
 				$("#"+streamName+"-ind").removeClass("ind-offline");
 				$("#"+streamName+"-ind").removeClass("ind-deactivated");
-				
+
 				$("#"+streamName+"-ind").addClass("ind-deactivated");
 			  }
 			  else if(data.online) {
 				$("#"+streamName+"-ind").removeClass("ind-online");
 				$("#"+streamName+"-ind").removeClass("ind-offline");
 				$("#"+streamName+"-ind").removeClass("ind-deactivated");
-				
+
 				$("#"+streamName+"-ind").addClass("ind-online");
 				$("#"+streamName+"-desc").text(data.name);
-				
+
 			  }
 			  else {
 				$("#"+streamName+"-ind").removeClass("ind-online");
 				$("#"+streamName+"-ind").removeClass("ind-offline");
 				$("#"+streamName+"-ind").removeClass("ind-deactivated");
-				
+
 				$("#"+streamName+"-ind").addClass("ind-offline");
 				$("#"+streamName+"-desc").text("Offline");
 			  }
 			});
 		  }
-		  
+
 		  var createFrames = function(channelType) {
-			
+
 			for(var i = 0; i < channels[channelType].length; i++) {
 			  var streamName = channels[channelType][i];
 			  var link = "/"+channelType+"/"+streamName;
-			  
-			  var element = "<a href=\"" + link 
-				+ "\"  class=\"list-group-item\">" 
+
+			  var element = "<a href=\"" + link
+				+ "\"  class=\"list-group-item\">"
 				  + "<div id=\"" + streamName + "-frame\" class=\"row\">"
 					+ "<div id=\"" + streamName + "-title\" class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4\">"
-					  + "<img id=\"" + streamName + "-img\" style=\"float:left\" class=\"img-responsive stream-frame-img\" src=\"\" alt=\"No Logo Available D:\" height=\"50\" width=\"50\" >" 
+					  + "<img id=\"" + streamName + "-img\" style=\"float:left\" class=\"img-responsive stream-frame-img\" src=\"\" alt=\"No Logo Available D:\" height=\"50\" width=\"50\" >"
 					+ "</div>"
 					+ "<div id=\"" + streamName + "-name\">"
 					  + "<h4 id=\"" + streamName + "-name-heading\">" + streamName + "</h4>"
 					+ "</div>"
 				  + "</div>"
 				  + "<div id=\"" + streamName + "-status\">"
-				  + "<i id=\"" + streamName + "-ind\" class=\"fa fa-circle ind-offline\" aria-hidden=\"true\">&nbsp;</i>" 
+				  + "<i id=\"" + streamName + "-ind\" class=\"fa fa-circle ind-offline\" aria-hidden=\"true\">&nbsp;</i>"
 					+ "<span id=\"" + streamName + "-desc\">"
 					  + "Offline"
 					+ "</span>"
 				  + "</div>"
 				+ "</a>";
-			  
+
 			  $("#"+channelType+"-feat-list").append(element);
-			  
+
 			  if("twitch" == channelType) {
 				updateTwitchChannel(streamName);
 			  }
-			  else if ("beam" == channelType) {
-				updateBeamChannel(streamName);
+			  else if ("mixer" == channelType) {
+				updateMixerChannel(streamName);
 			  }
 			  else {
 				console.log("erroneous channel type");
@@ -222,11 +222,11 @@
 		  };
 
 		$(document).ready(function() {
-		  
+
 		  // create the featured streamer frames under the main frame.
 		  // essentially run everything.
 		  createFrames("twitch");
-		  createFrames("beam");
+		  createFrames("mixer");
 		});
 	  </script>
 	</body>
